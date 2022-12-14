@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "data": [
+    {
+      "firstName": "Suresh",
+      "lastName": "Sarda"
+    },
+    {
+      "firstName": "Rashmi",
+      "lastName": "Bang"
+    }
+  ]
+}
