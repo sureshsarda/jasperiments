@@ -1,5 +1,8 @@
 package com.pracman;
 
+import com.google.gson.Gson;
+
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -7,8 +10,12 @@ import java.util.Arrays;
 
 public class StaticApiMock implements InvocationHandler {
 
+    final Gson GSON = new Gson();
 
-    private String baseDirectory;
+    /**
+     * This is used only for grouping the responses across a larger project
+     */
+    private final String baseDirectory;
 
     public StaticApiMock(String baseDirectory) {
         this.baseDirectory = baseDirectory;
@@ -16,19 +23,14 @@ public class StaticApiMock implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.println(method.getDeclaringClass());
-        System.out.println(method.getName());
 
-        InputStream resourceAsStream = proxy.getClass().getResourceAsStream(baseDirectory + "\\" + method.getName() +
+        // read from the directory
+        InputStream resourceAsStream = proxy.getClass().getClassLoader().getResourceAsStream(baseDirectory + File.separator + method.getName() +
                 ".json");
         assert resourceAsStream != null;
-        System.out.println(new String(resourceAsStream.readAllBytes()));
+        String contents = new String(resourceAsStream.readAllBytes());
 
-
-        System.out.println(proxy.getClass());
-
-        System.out.println(method);
-        System.out.println(Arrays.toString(args));
-        return null;
+        // convert to object, use the return type of the method to parse the string
+        return GSON.fromJson(contents, method.getGenericReturnType());
     }
 }
