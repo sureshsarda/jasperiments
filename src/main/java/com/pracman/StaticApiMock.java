@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
 public class StaticApiMock implements InvocationHandler {
@@ -17,9 +18,17 @@ public class StaticApiMock implements InvocationHandler {
      */
     private final String baseDirectory;
 
-    public StaticApiMock(String baseDirectory) {
+    private StaticApiMock(String baseDirectory) {
         this.baseDirectory = baseDirectory;
     }
+
+    public static <T> T createMock(String baseDirectory, Class<T> tClass) {
+        StaticApiMock mock = new StaticApiMock(baseDirectory);
+
+        return tClass.cast(Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+                new Class[]{tClass}, mock));
+    }
+
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

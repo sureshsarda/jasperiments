@@ -11,13 +11,7 @@ public class Application {
 
     public static void main(String[] args) {
 
-        // users is a directory under which grouping is happening
-        StaticApiMock mock = new StaticApiMock("users");
-
-        // create a mock service
-        UserService service = (UserService) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                new Class[]{UserService.class}, mock);
-
+        UserService service = StaticApiMock.createMock("users", UserService.class);
 
         // use the mocked service
         List<UserService.User> allUsers = service.getAllUsers();
